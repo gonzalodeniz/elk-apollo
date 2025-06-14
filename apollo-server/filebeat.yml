@@ -26,11 +26,15 @@ filebeat.inputs:
 
 # ========== SALIDA (Logstash) ======================================
 output.logstash:
-  hosts: ["${FILEBEAT_OUTPUT_LOGSTASH_HOSTS}"] # Dirección de Logstash (por variable de entorno)
+  hosts: ["logstash:5044"] # Dirección de Logstash 
+
+# Descomenta para activar los dashboards de Kibana
+# output.elasticsearch:
+#   hosts: ["http://elasticsearch:9200"]
 
 # ========== INTEGRACIÓN CON KIBANA ================================
 setup.kibana:
-  host: "kibana:5601"                 # Dirección de Kibana
+  host: "http://kibana:5601"                 # Dirección de Kibana
 setup.dashboards.enabled: true         # Habilita dashboards predefinidos
 
 # ========== PROCESADORES ==========================================

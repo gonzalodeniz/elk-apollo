@@ -11,7 +11,7 @@ RUN apt-get update && \
     gpg --dearmor -o /usr/share/keyrings/elastic-keyring.gpg && \    
     echo "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" \    
         > /etc/apt/sources.list.d/elastic-8.x.list && \
-    apt-get update && apt-get install -y filebeat=8.13.4 && \        
+    apt-get update && apt-get install -y filebeat=8.13.4 metricbeat=8.13.4 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
@@ -24,7 +24,10 @@ RUN npm install --omit=dev --no-audit --no-fund
 
 # Copia filebeat y su configuración
 COPY filebeat.yml /etc/filebeat/filebeat.yml
-RUN chown root:root /etc/filebeat/filebeat.yml
+COPY metricbeat.yml /etc/metricbeat/metricbeat.yml
+RUN chown root:root /etc/filebeat/filebeat.yml && \
+    chown root:root /etc/metricbeat/metricbeat.yml
+
 
 # Copiamos el resto del código
 COPY index.js .
