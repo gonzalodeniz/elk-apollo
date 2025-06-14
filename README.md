@@ -16,7 +16,7 @@ Este proyecto despliega un stack completo de observabilidad y monitorización us
 
 1. **Clona el repositorio y accede al directorio**
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/gonzalodeniz/elk-apollo
    cd elk-apollo
    ```
 
@@ -39,22 +39,11 @@ Este proyecto despliega un stack completo de observabilidad y monitorización us
 1. **Accede a Kibana**
    - Navega a [http://localhost:5601](http://localhost:5601)
 
-2. **Importa dashboards de Filebeat**
-   - Los dashboards de Filebeat se cargan automáticamente si `setup.dashboards.enabled: true` en la configuración de Filebeat.
-   - Ve a "Dashboards" y busca los de Filebeat (por ejemplo, "[Filebeat System] Syslog dashboard").
+2. **Visualiza logs y métricas**
+   - Ve a "Observability > Logs" para explorar los logs enviados por Filebeat.
 
-3. **Visualiza logs y métricas**
-   - Ve a "Discover" para explorar los logs enviados por Filebeat.
-   - Filtra por el índice `filebeat-*` o `logstash-*` según la configuración.
-
-4. **APM (Opcional)**
-   - Si tienes agentes APM configurados en tu app, ve a la sección "APM" para ver trazas y métricas de rendimiento.
-
-## Personalización
-
-- Puedes modificar la configuración de Filebeat, Logstash o Apollo Server según tus necesidades.
-- Para añadir más módulos de Filebeat, edita el archivo `filebeat.yml` en el contenedor correspondiente.
-
+3. **Discovery logs-generic-default***
+   - Ve a "Descovery" y se mostrará los campos de los logs
 ## Parar y limpiar
 
 ```bash
@@ -64,4 +53,13 @@ Esto detiene y elimina los contenedores y volúmenes de datos.
 
 ---
 
-**Autor:** Tu nombre o equipo
+# Problemas
+
+**Conexión de apollo con kibana**
+Puede que en kibana no se visualice los índices del apollo-server. Comprueba los logs de apollo-server y puede que muestre este mensaje:
+"Exiting: error connecting to Kibana: fail to get the Kibana version: HTTP GET request to http://kibana:5601/api/status fails"
+
+En este caso, reinicia el apollo-server o el filebeat para que reconecte. Esto puede pasar si Kibana no está disponible en el momento de 
+inicializar el filebeat.
+
+
