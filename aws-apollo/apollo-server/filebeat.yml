@@ -1,0 +1,54 @@
+# =============================================
+# Filebeat Configuration File for Linux Agent
+# =============================================
+#
+# Este archivo configura Filebeat para recolectar logs del sistema
+# dentro de un contenedor Linux y enviarlos a Logstash. Además,
+# habilita la integración con Kibana para visualización y dashboards,
+# y añade metadatos útiles de host, Docker y cloud. También activa
+# el módulo 'system' para recolectar logs de syslog y auth.
+#
+# Principales secciones:
+# - Entradas: Define los logs a recolectar.
+# - Salida: Configura el envío de logs a Logstash.
+# - Integración con Kibana: Para dashboards y visualización.
+# - Procesadores: Añade metadatos a los logs.
+# - Módulos: Activa módulos específicos de Filebeat.
+#
+# ========== ENTRADAS (logs a recolectar) ===========================
+filebeat.inputs:
+  - type: filestream                  # Tipo de entrada: lectura de archivos
+    id: container-logs                # Identificador de la entrada
+    paths:
+      - /var/log/*.log                # Logs del sistema dentro del contenedor
+    ignore_older: 72h                 # Ignora archivos no modificados en 72h
+    prospector.scanner.include_older: 10m # Intervalo de escaneo de archivos antiguos
+
+# ========== SALIDA (Logstash) ======================================
+output.logstash:
+  hosts: ["logstash:5044"] # Dirección de Logstash 
+
+# Descomenta para activar los dashboards de Kibana
+# output.elasticsearch:
+#   hosts: ["http://elasticsearch:9200"]
+
+# ========== INTEGRACIÓN CON KIBANA ================================
+setup.kibana:
+  host: "http://kibana:5601"                 # Dirección de Kibana
+setup.dashboards.enabled: true         # Habilita dashboards predefinidos
+
+# ========== PROCESADORES ==========================================
+processors:
+  - add_host_metadata: ~               # Añade metadatos del host
+  - add_docker_metadata: ~             # Añade metadatos de Docker
+  - add_cloud_metadata: ~              # Añade metadatos de cloud
+
+# ========== MÓDULOS DE FILEBEAT ===================================
+filebeat.modules:
+  - module: system                    # Módulo para logs del sistema
+    syslog:
+      enabled: true                   # Habilita recolección de syslog
+    auth:
+      enabled: true                   # Habilita recolección de logs de autenticación
+
+# Fin del archivo
