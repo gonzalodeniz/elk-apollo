@@ -62,13 +62,12 @@ services:
     container_name: apollo-server
     hostname: apollo-server
     ports:
-      - "4000:4000"        
+      - "4000:4000"    
     environment:
-      # --- Filebeat enviará a Logstash ---
-      - FILEBEAT_OUTPUT_LOGSTASH_HOSTS=logstash:5044
-      # -- Para agentes APM que instales dentro de este contenedor ---
       - ELASTIC_APM_SERVER_URL=http://apm-server:8200
-      - ELASTIC_APM_SECRET_TOKEN=secretoAPM      
+      - ELASTIC_APM_SECRET_TOKEN=secretoAPM
+      - ELASTIC_APM_SERVICE_NAME=apollo-graphql
+      - ELASTIC_APM_LOG_LEVEL=debug              
     depends_on: [kibana, elasticsearch, logstash]    
     networks: [elastic]
     restart: on-failure
