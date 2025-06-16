@@ -3,12 +3,13 @@
 services:
   # === CORE ELASTIC STACK =========================================
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.17
     container_name: elasticsearch
     hostname: elasticsearch
     environment:
       - discovery.type=single-node      # Nodo único
-      - xpack.security.enabled=false    
+      - xpack.security.enabled=true    
+      - ELASTIC_PASSWORD=changeme       
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:
@@ -16,31 +17,37 @@ services:
     networks: [elastic]
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.13.4
+    image: docker.elastic.co/kibana/kibana:7.17.17
     container_name: kibana
     hostname: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme
     ports:
       - "5601:5601"
     depends_on: [elasticsearch]
     networks: [elastic]
 
   apm-server:
-    image: docker.elastic.co/apm/apm-server:8.13.4
+    image: docker.elastic.co/apm/apm-server:7.17.17
     container_name: apm-server
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - KIBANA_HOST=http://kibana:5601
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme
       - APM_SERVER_SECRET_TOKEN=secretoAPM      # Token que pondrás en tus agentes
     ports:
       - "8200:8200"
+    volumes:
+      - ./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro
     depends_on: [elasticsearch, kibana]
     networks: [elastic]
 
   # --------------------- Logstash --------------------
   logstash:
-    image: docker.elastic.co/logstash/logstash:8.13.4
+    image: docker.elastic.co/logstash/logstash:7.17.17
     container_name: logstash
     hostname: logstash
     volumes:
@@ -49,7 +56,10 @@ services:
       - "5044:5044"    # Beats input
     environment:
       - LS_JAVA_OPTS=-Xms256m -Xmx256m
-#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme
+      - xpack.monitoring.enabled=false   # Desactiva chequeo de licencia X-Pack      
     depends_on: [elasticsearch]
     networks: [elastic]
 

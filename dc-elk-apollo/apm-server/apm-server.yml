@@ -1,0 +1,46 @@
+# ================= APM Server Configuration ==================
+
+apm-server:
+  # Escucha datos de agentes APM
+  host: "0.0.0.0:8200"
+  # Autenticación con token secreto
+  secret_token: "secretoAPM"
+  # Opcional: habilitar TLS en el endpoint HTTP
+  # ssl.enabled: true
+  # ssl.certificate: /usr/share/apm-server/config/certs/apm.crt
+  # ssl.key: /usr/share/apm-server/config/certs/apm.key
+
+# Salida a Elasticsearch
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  username: "elastic"
+  password: "changeme"
+  # ssl:
+  #   enabled: true
+  #   certificate_authorities: ["/usr/share/apm-server/config/certs/ca.crt"]
+
+# Configuración de dashboards en Kibana
+setup.kibana:
+  host: "http://kibana:5601"
+  username: "elastic"
+  password: "changeme"
+
+# Monitoreo del APM Server en Elasticsearch
+disabled: false
+monitoring:
+  enabled: true
+  elasticsearch:
+    hosts: ["http://elasticsearch:9200"]
+    username: "elastic"
+    password: "changeme"
+
+# Configuración de logging
+logging:
+  level: info
+  to_files: true
+  files:
+    path: /var/log/apm-server
+    name: apm-server.log
+    keepfiles: 7
+    permissions: 0644
+  # to_stdout: true  # habilitar para logs en stdout

@@ -1,16 +1,53 @@
-metricbeat.modules:
-- module: system
-  period: 10s
-  metricsets:
-    - cpu
-    - memory
-    - filesystem
-    - diskio
-    - load
-  enabled: true
+# ================= Metricbeat Configuration ==================
 
+metricbeat.modules:
+  - module: system
+    enabled: true
+    period: 10s
+    metricsets:
+      - cpu
+      - memory
+      - filesystem
+      - diskio
+      - load
+    process.include_top_n:
+      by_cpu: 5
+      by_memory: 5
+
+# Opcional: configurar módulos dinámicos desde modules.d
+metricbeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+# Salida a Elasticsearch
 output.elasticsearch:
   hosts: ["http://elasticsearch:9200"]
+  username: "elastic"
+  password: "changeme"
+  ssl.enabled: false   # usar true si habilitas TLS y montas certificados
 
+# Setup de dashboards y plantillas en Kibana
 setup.kibana:
   host: "http://kibana:5601"
+  username: "elastic"
+  password: "changeme"
+
+setup.dashboards.enabled: true
+setup.template.enabled: true
+setup.template.name: "metricbeat"
+setup.template.pattern: "metricbeat-*"
+
+# Procesadores para añadir metadata
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+
+# Logging local
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/metricbeat
+  name: metricbeat.log
+  keepfiles: 7
+  permissions: 0644

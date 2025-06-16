@@ -1,3 +1,16 @@
+import apm from 'elastic-apm-node';
+
+// ---------- 0. Configuración de APM ----------
+apm.start({
+  serviceName: 'apollo-server',
+  serverUrl: 'http://apm-server:8200',
+  secretToken: 'secretoAPM',  
+  environment: 'produccion',
+  captureBody: 'all',
+  logLevel: 'trace',
+
+});
+
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 
@@ -34,3 +47,4 @@ const { url } = await startStandaloneServer(server, {
 });
 
 console.log(`🚀  Server ready at: ${url}`);
+
